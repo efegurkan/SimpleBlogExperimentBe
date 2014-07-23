@@ -66,7 +66,7 @@ exports.blogList = {
 
     // Add some random wait
     var wait = Math.floor(Math.random() * 10)
-    var failProb = Math.floor(Math.random() * 5)
+    var failProb = Math.floor(Math.random() * 10)
 
     setTimeout(function() {
       // Add some random fail
@@ -101,25 +101,26 @@ exports.blogSave = {
     if(!isValid) {
       connection.error = { Error: "InvalidInput" }
       connection.rawConnection.responseHttpCode = 500;
+      next(connection, true);
     } else {
-      blogEntries.push({title: connection.params.title, text: connection.params.text });
+      blogEntries.unshift({title: connection.params.title, text: connection.params.text });
       connection.response = {
         success: true
       }
+
+      var wait = Math.floor(Math.random() * 10)
+      var failProb = Math.floor(Math.random() * 10)
+
+      setTimeout(function() {
+        // Add some random fail
+        if(failProb == 0) {
+          connection.response = {};
+          connection.error = { Error: "RandomFail" }
+          connection.rawConnection.responseHttpCode = 500;
+        }
+        next(connection, true);      
+      }, wait * 250)
     }
-
-    var wait = Math.floor(Math.random() * 10)
-    var failProb = Math.floor(Math.random() * 5)
-
-    setTimeout(function() {
-      // Add some random fail
-      if(failProb == 0) {
-        connection.response = {};
-        connection.error = { Error: "RandomFail" }
-        connection.rawConnection.responseHttpCode = 500;
-      }
-      next(connection, true);      
-    }, wait * 250)
   }
 };
 
